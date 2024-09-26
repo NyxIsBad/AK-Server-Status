@@ -4,10 +4,13 @@ import socket
 import discord
 import os
 import asyncio
+import configparser
 
-# Discord bot token and channel ID
-DISCORD_TOKEN = 'your_discord_token'
-CHANNEL_ID = 123456789012345678  # Replace with your channel ID
+# Load token and channel ID from secrets.ini
+config = configparser.ConfigParser()
+config.read('secrets.ini')
+DISCORD_TOKEN = config.get('discord', 'token')
+CHANNEL_ID = config.getint('discord', 'channel_id')
 
 # Function to check if the server is online
 def check_server(ip, port, timeout=2):
