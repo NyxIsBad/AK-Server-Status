@@ -9,8 +9,8 @@ import configparser
 # Load token and channel ID from secrets.ini
 config = configparser.ConfigParser()
 config.read('secrets.ini')
-DISCORD_TOKEN = config.get('discord', 'token')
-CHANNEL_ID = config.getint('discord', 'channel_id')
+DISCORD_TOKEN = config.get('bot', 'token')
+CHANNEL_ID = config.getint('bot', 'channel_id')
 
 # Function to check if the server is online
 def check_server(ip, port, timeout=2):
@@ -23,7 +23,7 @@ def check_server(ip, port, timeout=2):
             return False  # Server is offline or unreachable
 
 # Define a subclass of discord.Client for the bot
-class MyDiscordBot(discord.Client):
+class ServerUptimeBot(discord.Client):
     async def on_ready(self):
         print(f'Logged in as {self.user.name}')
         self.channel = self.get_channel(CHANNEL_ID)
@@ -65,5 +65,5 @@ if __name__ == '__main__':
         os._exit(0)
 
     intents = discord.Intents.default()
-    bot = MyDiscordBot(intents=intents)
+    bot = ServerUptimeBot(intents=intents)
     bot.run(DISCORD_TOKEN)
