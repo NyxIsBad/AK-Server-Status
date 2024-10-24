@@ -40,6 +40,7 @@ def check_server(ip, port, timeout=2):
             return False  # Server is offline or refused the connection
         
 def webhook_state(urls):
+    asyncio.run(send_embed_via_webhook(title="AK Server Status", description="Starting the server status monitoring", color=0x0000ff, URLs=urls))
     if len(urls) <= 0:
         print("No webhook URLs provided. Exiting...")
         return
