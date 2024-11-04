@@ -11,7 +11,7 @@ async def send_embed_via_webhook(title="AK Server Status", description="", color
     
     payload = {
         "username": "AK Server Status",
-        "avatar_url": "https://cdn.discordapp.com/attachments/1299007089766568016/1299007221166823424/ak.png",
+        "avatar_url": "https://i.imgur.com/0tat45m.jpeg",
         "content": content,
         "embeds": [embed]
     }
@@ -89,11 +89,10 @@ def webhook_state(urls):
                 try:
                     socket.gethostbyname('google.com')
                 except socket.gaierror:
-                    time.sleep(60)
                     continue
                 # State changed, reset consecutive count
                 status[i] = (state, 1)
-                payload += f"Channel {i+1} is now {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
+                payload += f"Channel {i+1} is possibly {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
                 timer = 30 # we need to double check on a state change
             
             all_online = sum([state for state, _ in status]) == 4
