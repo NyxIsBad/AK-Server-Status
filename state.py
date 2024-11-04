@@ -107,10 +107,11 @@ def webhook_state(urls):
                 URLs=urls
             ))
         else: 
+            # pass
             print("No changes in the status of the channels")
         
         # every hour, send a message to the webhook to show that the bot is still running
-        if datetime.datetime.now().minute == 0 or True:
+        if datetime.datetime.now().minute == 0:# or True:
             asyncio.run(send_embed_via_webhook(
                 title="Aura Kingdom Server Status",
                 description=f"Hourly check: channel states are {'all online' if all_online else 'at least partially offline or unreachable'}\nChannel 1 has been {'online' if status[0][0] == 1 else 'offline or unreachable'} for {status[0][1]} counts\nChannel 2 has been {'online' if status[1][0] == 1 else 'offline or unreachable'} for {status[1][1]} counts\nChannel 3 has been {'online' if status[2][0] == 1 else 'offline or unreachable'} for {status[2][1]} counts\nChannel 4 has been {'online' if status[3][0] == 1 else 'offline or unreachable'} for {status[3][1]} counts",
