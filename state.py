@@ -35,6 +35,8 @@ def check_server(ip, port, timeout=2):
             return False  # Server is offline or refused the connection
         
 def webhook_state(urls):
+    main_urls = [url for url, _ in urls]
+    verbose_urls = [url for url, x in urls if x == True]
     # Each channel in `status` will be a tuple (state, consecutive_count)
     status = [(-1, 0)] * 4  # Initialize as offline with 0 consecutive occurrences
     time_since_last_update = time.time()
@@ -44,7 +46,7 @@ def webhook_state(urls):
     timer = 120  # Check every 2 minutes by default
 
     # Send initial status
-    asyncio.run(send_embed_via_webhook(title="AK Server Status", description="Starting the server status monitoring", color=0x0000ff, URLs=urls))
+    asyncio.run(send_embed_via_webhook(title="AK Server Status", description="Starting the server status monitoring", color=0x0000ff, URLs=main_urls))
     
     if len(urls) <= 0:
         print("No webhook URLs provided. Exiting...")
@@ -103,7 +105,7 @@ def webhook_state(urls):
                 title="Aura Kingdom Server Status",
                 description=payload,
                 color=0x00ff00 if all_online else 0xff0000,
-                URLs=[url for url, _ in urls]
+                URLs=main_urls
             ))
         else: 
             # pass
@@ -116,7 +118,7 @@ def webhook_state(urls):
                 title="Aura Kingdom Server Status",
                 description=f"Hourly check: channel states are {'all online' if all_online else 'at least partially offline or unreachable'}\nChannel 1 has been {'online' if status[0][0] == 1 else 'offline or unreachable'} for {status[0][1]} counts\nChannel 2 has been {'online' if status[1][0] == 1 else 'offline or unreachable'} for {status[1][1]} counts\nChannel 3 has been {'online' if status[2][0] == 1 else 'offline or unreachable'} for {status[2][1]} counts\nChannel 4 has been {'online' if status[3][0] == 1 else 'offline or unreachable'} for {status[3][1]} counts",
                 color=0x0000ff,
-                URLs=[url for url, x in urls if x == True]
+                URLs=verbose_urls
             ))
 
         time.sleep(timer)  # Check every 2 minutes
