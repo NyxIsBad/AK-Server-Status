@@ -98,12 +98,12 @@ def webhook_state(urls):
             all_online = sum([state for state, _ in status]) == 4
 
         # Only send a webhook if there are updates
-        if len(payload) > 0:
+        if len(payload) > 0: 
             asyncio.run(send_embed_via_webhook(
                 title="Aura Kingdom Server Status",
                 description=payload,
                 color=0x00ff00 if all_online else 0xff0000,
-                URLs=urls
+                URLs=[url for url, _ in urls]
             ))
         else: 
             # pass
@@ -116,7 +116,7 @@ def webhook_state(urls):
                 title="Aura Kingdom Server Status",
                 description=f"Hourly check: channel states are {'all online' if all_online else 'at least partially offline or unreachable'}\nChannel 1 has been {'online' if status[0][0] == 1 else 'offline or unreachable'} for {status[0][1]} counts\nChannel 2 has been {'online' if status[1][0] == 1 else 'offline or unreachable'} for {status[1][1]} counts\nChannel 3 has been {'online' if status[2][0] == 1 else 'offline or unreachable'} for {status[2][1]} counts\nChannel 4 has been {'online' if status[3][0] == 1 else 'offline or unreachable'} for {status[3][1]} counts",
                 color=0x0000ff,
-                URLs=urls
+                URLs=[url for url, x in urls if x == True]
             ))
 
         time.sleep(timer)  # Check every 2 minutes
