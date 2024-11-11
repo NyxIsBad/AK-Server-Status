@@ -46,7 +46,7 @@ def webhook_state(urls):
     timer = 120  # Check every 2 minutes by default
 
     # Send initial status
-    asyncio.run(send_embed_via_webhook(title="AK Server Status", description="Starting the server status monitoring", color=0x0000ff, URLs=main_urls))
+    asyncio.run(send_embed_via_webhook(title="AK Server Status", description="An error occurred or the bot was restarted\nStarting the server status monitoring", color=0x0000ff, URLs=main_urls))
     
     if len(urls) <= 0:
         print("No webhook URLs provided. Exiting...")
@@ -95,7 +95,7 @@ def webhook_state(urls):
                     status[i] = (state, 1, False)
                     payload += f"Channel {i+1} is now {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
             
-            all_online = sum([state for state, _ in status]) == 4
+            all_online = sum([state for state, _, _ in status]) == 4
 
         # Only send a webhook if there are updates
         if len(payload) > 0: 
