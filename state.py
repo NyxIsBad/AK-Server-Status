@@ -38,7 +38,7 @@ def webhook_state(urls):
     main_urls = [url for url, _ in urls]
     verbose_urls = [url for url, x in urls if x == True]
     # Each channel in `status` will be a tuple (state, consecutive_count)
-    status = [(-1, 0)] * 4  # Initialize as offline with 0 consecutive occurrences
+    status = [(-1, 0, False)] * 4  # Initialize as offline with 0 consecutive occurrences and not on temporary downtime
     time_since_last_update = time.time()
     # Usage
     ip_address = '34.66.112.227'
@@ -71,31 +71,29 @@ def webhook_state(urls):
             cur_time = datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S')
             
             # Unpack previous state and consecutive count
-            prev_state, consecutive_count = status[i]
+            prev_state, consecutive_count, tmp = status[i]
 
             if prev_state == -1:
                 # Initialize the first state without sending a notification
-                status[i] = (state, 1)
+                status[i] = (state, 1, tmp)
                 payload += f"Channel {i+1} starts as {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
             elif prev_state == state:
                 # If the state has not changed, increment the consecutive count
+                # Note that we use false because you could get a 1 0 1 sequence and want to cancel the "Temporary downtime" status
                 consecutive_count += 1
-                status[i] = (state, consecutive_count)
-                
-                # Send a notification only if the state is the same twice in a row
-                if consecutive_count == 2:
-                    payload += f"Channel {i+1} is {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
-                    timer = 120 # reset the timer
+                status[i] = (prev_state, consecutive_count, False)
             else:
                 # check for wifi issues
                 try:
                     socket.gethostbyname('google.com')
                 except socket.gaierror:
                     continue
-                # State changed, reset consecutive count
-                status[i] = (state, 1)
-                payload += f"Channel {i+1} is possibly {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
-                timer = 30 # we need to double check on a state change
+                # State changed, so we set tmp to True to indicate that the state may have changed. If it persists, we will then update the status
+                if tmp == False: 
+                    status[i] = (prev_state, consecutive_count, True)
+                elif tmp == True:
+                    status[i] = (state, 1, False)
+                    payload += f"Channel {i+1} is now {'online' if state == 1 else 'offline or unreachable'} at {cur_time} UTC\n"
             
             all_online = sum([state for state, _ in status]) == 4
 
